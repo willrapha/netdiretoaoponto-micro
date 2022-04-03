@@ -1,9 +1,11 @@
 using DevFreela.API.Filters;
 using DevFreela.Application.Commands.CreateProject;
+using DevFreela.Application.Consumers;
 using DevFreela.Application.Validators;
 using DevFreela.Core.Repositories;
 using DevFreela.Core.Services;
 using DevFreela.Infrastructure.Auth;
+using DevFreela.Infrastructure.MessageBus;
 using DevFreela.Infrastructure.Payments;
 using DevFreela.Infrastructure.Persistence;
 using DevFreela.Infrastructure.Persistence.Repositories;
@@ -37,6 +39,8 @@ namespace DevFreela.API
             services.AddDbContext<DevFreelaDbContext>(
                 options => options.UseSqlServer(connectionString));
 
+            services.AddHostedService<PaymentApprovedConsumer>();
+
             services.AddHttpClient();
 
             services.AddScoped<IProjectRepository, ProjectRepository>();
@@ -44,6 +48,7 @@ namespace DevFreela.API
             services.AddScoped<ISkillRepository, SkillRepository>();
             services.AddScoped<IAuthService, AuthService>();
             services.AddScoped<IPaymentService, PaymentService>();
+            services.AddScoped<IMessageBusService, MessageBusService>();
 
             // Registramos só um devido ao assembly ja pegar todos os outros por meio desse
             services.AddMediatR(typeof(CreateProjectCommand));
